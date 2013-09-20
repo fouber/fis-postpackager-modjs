@@ -27,7 +27,7 @@ module.exports = function(ret, settings, conf, opt){ //打包后处理
     });
     var code = 'require.resourceMap(' + JSON.stringify(map, null, opt.optimize ? null : 4) + ');';
     //构造map.js配置文件
-    var subpath = (settings.subpath || 'pkg/map.js').replace(/^\//, '');
+    var subpath = (conf.subpath || 'pkg/map.js').replace(/^\//, '');
     var file = fis.file(fis.project.getProjectPath(), subpath);
     file.setContent(code);
     ret.pkg[file.subpath] = file;
