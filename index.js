@@ -5,19 +5,25 @@
 
 'use strict';
 
-module.exports = function(ret, settings, conf, opt){ //打包后处理
+module.exports = function(ret, conf, settings, opt){ //打包后处理
     var map = {
         res : {},
         pkg : {}
     };
     fis.util.map(ret.map.res, function(id, res){
         var r = map.res[id] = {};
-        if(res.deps) r.deps = res.deps;
+        if(res.deps) {
+            r.deps = res.deps;
+        }
         //有打包的话就不要加url了，以减少map.js的体积
         if(res.pkg) {
             r.pkg = res.pkg;
         } else {
             r.url = res.uri;
+        }
+        // 是否给map.js添加type属性
+        if(settings.useType) {
+            r.type = res.type;
         }
     });
     fis.util.map(ret.map.pkg, function(id, res){
@@ -27,7 +33,7 @@ module.exports = function(ret, settings, conf, opt){ //打包后处理
     });
     var code = 'require.resourceMap(' + JSON.stringify(map, null, opt.optimize ? null : 4) + ');';
     //构造map.js配置文件
-    var subpath = (conf.subpath || 'pkg/map.js').replace(/^\//, '');
+    var subpath = (settings.subpath || 'pkg/map.js').replace(/^\//, '');
     var file = fis.file(fis.project.getProjectPath(), subpath);
     file.setContent(code);
     ret.pkg[file.subpath] = file;
